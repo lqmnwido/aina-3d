@@ -1,0 +1,63 @@
+{
+  "blender": "5.2.2 LTS",
+  "scene": "AINA | reference wave \u2022 122 frames",
+  "objects": 34,
+  "meshes": 15,
+  "materials": 15,
+  "fps": 24,
+  "frames": 122,
+  "seconds": 5.083333333333333,
+  "resolution": [
+    1620,
+    1080
+  ],
+  "packed_images": [
+    "ai_yata_httpss_mj_run5DFnCPqEVsM_a_3D_cute_virtual_assistant_sp.png"
+  ],
+  "evaluated_poses": [
+    {
+      "frame": 1,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 0.0
+    },
+    {
+      "frame": 9,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 0.96875
+    },
+    {
+      "frame": 31,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 0.09375
+    },
+    {
+      "frame": 67,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 0.0
+    },
+    {
+      "frame": 73,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 1.0
+    },
+    {
+      "frame": 107,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 1.0
+    },
+    {
+      "frame": 122,
+      "arm_vertices": 6050,
+      "arm_faces": 6144,
+      "blink_left": 0.0
+    }
+  ],
+  "render_engine": "CYCLES",
+  "scope": "Scene structure, packed reference, finite evaluated geometry, animation range and pose checks. Not a certification of exact reference matching."
+}

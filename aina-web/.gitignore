@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+cloudflare/credentials.json
+cloudflare/*.log
+test-results/
+playwright-report/
+local-speech/.venv*/
+local-speech/models/
+local-speech/generated/
+local-speech/voices/
+local-speech/logs/
+local-speech/wsl-runtime/
+local-speech/*.log
+local-speech/__pycache__/
+public/models/*.blend1

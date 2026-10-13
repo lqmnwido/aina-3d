@@ -1,0 +1,10 @@
+{
+  "name": "aina-dialogue4-malay",
+  "reference": "../public/audio/aina-greeting-approved.wav",
+  "malay_conditioning": "../public/audio/aina-greeting-approved.wav",
+  "pitch": 0,
+  "exaggeration": 0.55,
+  "cfg_weight": 0.35,
+  "temperature": 0.65,
+  "approved_greeting": "../public/audio/aina-greeting-approved.wav"
+}

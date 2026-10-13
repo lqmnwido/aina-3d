@@ -1,0 +1,52 @@
+import {chromium} from '@playwright/test';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({channel:'chrome',headless:true,args:['--use-angle=d3d11','--autoplay-policy=no-user-gesture-required']});
+try{
+  const page=await browser.newPage({viewport:{width:1280,height:900},hasTouch:true}),errors=[],requests=[];
+  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+  await page.addInitScript(()=>{
+    window.ainaMicRequests=0;
+    window.ainaAudioEvents=[];
+    const create=AudioContext.prototype.createBufferSource;
+    AudioContext.prototype.createBufferSource=function(){
+      const source=create.call(this),start=source.start.bind(source);
+      source.start=(...args)=>{window.ainaAudioEvents.push({type:'start',at:performance.now(),rate:source.playbackRate.value});return start(...args);};
+      source.addEventListener('ended',()=>window.ainaAudioEvents.push({type:'end',at:performance.now()}));
+      return source;
+    };
+    if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=async()=>{window.ainaMicRequests++;throw Error('Unexpected microphone request');};
+  });
+  await page.goto(process.env.AINA_TEST_URL||'http://127.0.0.1:5173/');
+  const button=page.getByRole('button',{name:'Start bersama AINA'});
+  await button.waitFor({timeout:20000});
+  await page.waitForFunction(()=>!document.querySelector('.space-launch-hint')?.disabled,{timeout:25000});
+  assert.equal(await page.locator('.space-stars circle').count(),135);
+  await page.screenshot({path:'qa/space-theme.png',timeout:15000});
+  await button.click();
+  await page.locator('[data-launch-ready="true"]').waitFor({timeout:15000});
+  const events=await page.evaluate(()=>window.ainaAudioEvents);
+  assert.deepEqual(events.map(e=>e.type),['start','end','start','end']);
+  assert.ok(Math.abs(events[0].rate-1.06)<1e-6);assert.ok(Math.abs(events[2].rate-1.06)<1e-6);
+  const gap=events[2].at-events[1].at;
+  assert.ok(gap>=390&&gap<650,'real greeting playback delay: '+gap+'ms');
+  console.log('Measured greeting playback delay:',Math.round(gap)+'ms');
+  assert.equal(await page.locator('.space-launch-hint').count(),0);
+  await page.keyboard.press('Space');
+  await page.locator('.launch-reveal').waitFor({timeout:15000});
+  await page.keyboard.press('Space');
+  assert.equal(await page.locator('.launch-reveal').count(),1);
+  await page.reload();
+  await page.waitForFunction(()=>!document.querySelector('.space-launch-hint')?.disabled,{timeout:25000});
+  await page.getByRole('button',{name:'Start bersama AINA'}).click();
+  await page.locator('[data-launch-ready="true"]').waitFor({timeout:15000});
+  await page.mouse.move(100,300);await page.mouse.down();await page.mouse.move(180,300);await page.mouse.up();
+  assert.equal(await page.locator('.launch-reveal').count(),0,'dragging is not a launch tap');
+  await page.touchscreen.tap(100,300);
+  await page.locator('.launch-reveal').waitFor({timeout:15000});
+  await page.touchscreen.tap(100,300);
+  assert.equal(await page.locator('.launch-reveal').count(),1);
+  assert.equal(await page.evaluate(()=>window.ainaMicRequests),0);
+  assert.ok(!requests.some(url=>url.includes('/api/tts')||url.includes('/ws/asr')));
+  assert.equal(errors.length,0,errors.join('\n'));
+  console.log('Verified: greeting, hidden launch hint, Space and touch launch once, dragging does not launch, no microphone or ASR connection.');
+}finally{await browser.close();}
