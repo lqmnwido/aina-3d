@@ -1,6 +1,15 @@
 # AINA local app
 
-Use **SETUP.cmd** and **START.cmd** in the repository's parent folder. Setup installs Node.js/npm if needed, installs dependencies, restores video files and builds the presentation. START opens localhost. Internet is only required for initial installation and later dependency/media downloads.
+Follow the [step-by-step Windows installation guide](../README.md#step-by-step-windows-installation-recommended) in the main README.
+
+1. Download the repository ZIP and extract it.
+2. Open the extracted root folder containing **SETUP.cmd**, **START.cmd** and **aina-web**.
+3. Double-click **SETUP.cmd**, stay connected to the internet and wait for **Setup complete**. It installs Node.js/npm if needed, installs dependencies, restores videos and builds the presentation.
+4. Double-click **START.cmd** and wait for **100% Ready**. Open **http://localhost:5173** if the browser does not open automatically.
+5. Click **Start bersama AINA**, wait for the greeting, then press **Space** or tap the screen to launch.
+6. Keep the terminal open during use; press **Ctrl+C** in it to stop.
+
+For later use, only run START.cmd. The presentation works offline after setup. Internet is required for initial installation and later dependency/media downloads.
 
 If Node.js 22.12+ is already installed, from this folder:
 

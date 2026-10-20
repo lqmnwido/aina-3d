@@ -2,26 +2,77 @@
 
 AINA includes the 3D character, Malay voice recordings, lip movement, wave, flight, jetpack sound, exhaust smoke, montage and landing animation. Everything used during the presentation runs on your PC.
 
-## Windows: two clicks
+## Step-by-step Windows installation (recommended)
 
-1. Download this repository and extract it to a normal folder.
-2. Double-click **SETUP.cmd** once. It finds a compatible Node.js or downloads a private, checksum-verified Node.js 24 LTS runtime with npm. It then installs the locked dependencies, downloads any missing Git LFS media and builds AINA.
-3. Double-click **START.cmd**. Your browser opens **http://localhost:5173**.
+You need an internet connection for the first setup, free disk space for the app and media, and a browser with WebGL/hardware acceleration enabled. Node.js, npm and Git do not need to be installed beforehand when using the ZIP method below.
 
-No administrator rights, domain, Cloudflare, Python, AI models, API key or separate voice server are needed. Setup needs internet for downloads; after setup, the presentation works offline. Keep the terminal open; **Ctrl+C** stops AINA.
+### 1. Download the project
 
-Click **Start bersama AINA** to play the welcome. After the greeting, press **Space** or tap/click the screen to launch. Dragging rotates the model.
+1. Open [the AINA 3D repository](https://github.com/lqmnwido/aina-3d).
+2. Click the green **Code** button, then **Download ZIP**. Alternatively, [download the main branch ZIP directly](https://github.com/lqmnwido/aina-3d/archive/refs/heads/main.zip).
+3. Wait for the download to finish.
 
-## Terminal alternative
+### 2. Extract the ZIP
 
-With Node.js 22.12+ and npm installed, run from this folder:
+1. Right-click the downloaded ZIP and choose **Extract All**.
+2. Extract it into a folder you can write to, such as a folder inside **Documents**.
+3. Open the extracted project folder, normally called **aina-3d-main**.
+4. Confirm that **SETUP.cmd**, **START.cmd**, **README.md** and the **aina-web** folder are visible together.
+
+Run the scripts from the extracted folder, not from inside the ZIP. Keep the folder structure intact.
+
+### 3. Install and set up AINA
+
+1. Double-click **SETUP.cmd**.
+2. Keep the setup window open and stay connected to the internet.
+3. Wait while setup finds a compatible Node.js installation or installs a private Node.js 24 LTS runtime with npm, installs the app dependencies, downloads missing videos and builds AINA.
+4. Wait for **Setup complete**. Press a key to close the completed setup window.
+
+The first setup takes longer because it downloads dependencies and any missing media. The five bundled videos total approximately **550 MB**; download time depends on your connection. Later unchanged starts reuse installed files.
+
+No administrator rights, domain, Cloudflare, Python, AI models, API key or separate voice server are required. A downloaded Node.js runtime stays inside the project's **.runtime** folder; your global PATH is not changed.
+
+### 4. Start AINA
+
+1. Double-click **START.cmd**.
+2. Wait for the progress bar to reach **100% Ready**.
+3. The browser opens **http://localhost:5173**. If it does not open automatically, enter that address manually.
+4. Keep this terminal window open while using AINA.
+
+After setup has completed, AINA can run offline. For daily use, open **START.cmd**; you do not need to run setup every time.
+
+### 5. Run the presentation
+
+1. Turn on your speakers and check the computer/browser volume.
+2. Click **Start bersama AINA**. AINA waves and plays the welcome.
+3. Wait until the greeting finishes.
+4. Press **Space**, or tap/click the screen, to trigger the launch voice, rocket flight and montage.
+5. After the montage finishes, AINA lands and plays the success message.
+
+Dragging the character rotates it rather than launching the montage. Voice commands are not used in this local version. Video controls are hidden, and the montage plays with sound at full volume.
+
+### 6. Stop AINA
+
+Return to the terminal window and press **Ctrl+C**. Closing only the browser tab does not stop the local server. To start again later, double-click **START.cmd**.
+
+## Terminal alternative (Node.js already installed)
+
+1. Open PowerShell in the extracted repository folder containing `package.json`.
+2. With Node.js 22.12+ and npm installed, run setup once:
 
 ```powershell
 npm.cmd run setup
+```
+
+3. Start the local server:
+
+```powershell
 npm.cmd run local
 ```
 
-The same commands work inside `aina-web`. On macOS/Linux use `npm` and install Node.js yourself. The Windows scripts install a private runtime inside `.runtime`; they do not change the global PATH. If Node is only installed privately, use START.cmd rather than expecting npm to be globally available.
+4. Open **http://localhost:5173** and keep PowerShell open. Press **Ctrl+C** to stop.
+
+The same commands work inside `aina-web`. On macOS/Linux use `npm` and install Node.js yourself. If Node is only installed privately by SETUP.cmd, use START.cmd rather than expecting `npm` to be globally available.
 
 Setup runs `npm ci` against the app lockfile. Startup reuses installed dependencies and the existing build when unchanged; it builds again after source or asset changes. It automatically runs setup if dependencies are missing or their manifest changed. Progress is shown on screen, with detailed output only on error. Logs are in `aina-web/.local/`.
 
@@ -69,15 +120,31 @@ AI checkpoints, Python environments, credentials, temporary files and Node depen
 
 The local server binds to 127.0.0.1. It ignores old .env and Cloudflare files. To use another port, set PORT in the shell before launching; e.g. `$env:PORT=5174` in PowerShell.
 
-## Editing and troubleshooting
+## Updating an existing installation
+
+Stop AINA first with **Ctrl+C**. For a ZIP installation, download the latest ZIP into a new folder, extract it, and run its **SETUP.cmd** followed by **START.cmd**. This keeps your previous folder available if needed.
+
+For a Git clone, run `git pull` and `git lfs pull`, then run **SETUP.cmd** and **START.cmd**. Preserve any custom changes before pulling. Do not copy `node_modules` or `.runtime` from another PC; setup prepares the runtime and dependencies for the current machine.
+
+## Troubleshooting
+
+| Problem | What to do |
+| --- | --- |
+| Cannot find SETUP.cmd or START.cmd | Extract the ZIP and open the project folder containing both scripts and `aina-web`. |
+| `npm` is not recognized | Use SETUP.cmd, then START.cmd. The private npm installation is not added to the global PATH. |
+| Setup fails or a video is missing | Keep internet connected and rerun SETUP.cmd. Video pointer files are downloaded automatically; manual Git LFS installation is unnecessary for the ZIP method. |
+| Browser does not open | Check that the terminal says Ready, then open http://localhost:5173 manually. |
+| Page stops working after closing the terminal | Run START.cmd again and keep its window open. |
+| Port is already in use | Stop the previous AINA terminal with Ctrl+C before opening another copy. |
+| No sound | Click Start, unmute the browser/site and check speakers and system volume. |
+| Model is blank or not displayed | Enable browser hardware acceleration/WebGL and reload the page. |
+| Old video or voice still appears | Stop the app, run START.cmd again, then reload the browser with Ctrl+F5. |
+| Build or dependency error | Run SETUP.cmd again. Detailed errors are shown in the terminal; logs are in `aina-web/.local/setup.log` or `aina-web/.local/build.log`. |
+
+## Editing the presentation
 
 - Montage: copy a video into `aina-web/public/media/`, update its URL in `src/main.jsx` and the asset checker, then rebuild.
 - Voice: select WAV paths in `src/scripted-audio.js`. Text changes alone do not change prerecorded speech.
-- Missing video or LFS pointer: connect to the internet and run setup again.
-- No sound: click Start and check the browser/site volume.
-- Model display: enable browser hardware acceleration/WebGL.
-- Port in use: close the other AINA terminal before starting another copy.
-- Build or dependency error: run SETUP.cmd again; errors include the log path.
 - After changing files: reload the browser with Ctrl+F5.
 
 See [app details](aina-web/README.md) and [Blender notes](reconstruction/README.md).
