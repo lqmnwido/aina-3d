@@ -7,10 +7,10 @@
   "scripts": {
     "setup": "node tools/setup.mjs",
     "check": "node tools/check-assets.mjs",
-    "dev": "node server/index.js",
-    "local": "node local-speech/quiet-local.mjs",
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "local": "node tools/local.mjs",
     "build": "npm run check && vite build",
-    "start": "node server/index.js --production",
+    "start": "node tools/local.mjs",
     "test": "node --test tests/*.test.js"
   },
   "dependencies": {

@@ -25,4 +25,4 @@ test('TTS PCM is a correctly sized little endian mono WAV',()=>{
   assert.equal(wav.readUInt16LE(34),16); assert.equal(wav.readUInt32LE(40),6);
   assert.deepEqual(wav.subarray(44),pcm);
 });
-test('exact requested greeting',()=>assert.equal(GREETING,'Selamat Datang YBM! Sila beri arahan untuk lancarkan V2T.'));
+test('exact requested greeting',()=>assert.equal(GREETING,'Selamat Datang YB Menteri! Sila beri arahan untuk lancarkan V2T.'));

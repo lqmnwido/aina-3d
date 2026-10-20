@@ -26,7 +26,7 @@ try{
   await page.locator('[data-launch-ready="true"]').waitFor({timeout:15000});
   const events=await page.evaluate(()=>window.ainaAudioEvents);
   assert.deepEqual(events.map(e=>e.type),['start','end','start','end']);
-  assert.ok(Math.abs(events[0].rate-1.06)<1e-6);assert.ok(Math.abs(events[2].rate-1.06)<1e-6);
+  assert.equal(events[0].rate,1);assert.equal(events[2].rate,1,'greeting tempo is baked in without browser pitch shifting');
   const gap=events[2].at-events[1].at;
   assert.ok(gap>=390&&gap<650,'real greeting playback delay: '+gap+'ms');
   console.log('Measured greeting playback delay:',Math.round(gap)+'ms');
@@ -45,8 +45,16 @@ try{
   await page.locator('.launch-reveal').waitFor({timeout:15000});
   await page.touchscreen.tap(100,300);
   assert.equal(await page.locator('.launch-reveal').count(),1);
+  await page.locator('.launch-reveal.video-ready').waitFor({timeout:20000});
+  const montage=page.locator('video');
+  assert.equal(await montage.getAttribute('src'),'/media/v2t-v4-4.mp4');
+  const playback=await montage.evaluate(video=>({muted:video.muted,volume:video.volume,controls:video.controls}));
+  assert.deepEqual(playback,{muted:false,volume:1,controls:false});
+  await montage.evaluate(video=>video.dispatchEvent(new Event('ended')));
+  await page.locator('[data-launch-ready="true"]').waitFor({timeout:30000});
   assert.equal(await page.evaluate(()=>window.ainaMicRequests),0);
   assert.ok(!requests.some(url=>url.includes('/api/tts')||url.includes('/ws/asr')));
+  assert.ok(requests.every(url=>!/^https?:/.test(url)||new URL(url).origin===new URL(process.env.AINA_TEST_URL||'http://127.0.0.1:5173/').origin),'presentation uses only local assets');
   assert.equal(errors.length,0,errors.join('\n'));
-  console.log('Verified: greeting, hidden launch hint, Space and touch launch once, dragging does not launch, no microphone or ASR connection.');
+  console.log('Verified: greeting, 400ms gap, Space/touch launch, unmuted V2T_v4_4 montage, landing, and no microphone, AI or external asset requests.');
 }finally{await browser.close();}

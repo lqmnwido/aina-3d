@@ -11,7 +11,7 @@ try{
     const start=AudioBufferSourceNode.prototype.start;
     AudioBufferSourceNode.prototype.start=function(...args){window.playedRates.push(this.playbackRate.value);if(this.loop)window.jetpackStarts.push(this.context.currentTime);return start.apply(this,args);};
     const original=HTMLMediaElement.prototype.play;let rejectFirst=true;
-    HTMLMediaElement.prototype.play=function(){if(this.src.includes('precomp_13-current.mp4'))window.videoCoverGates.push(document.querySelector('.launch-trail')?.dataset.covered==='true');if(rejectFirst&&this.src.includes('precomp_13-current.mp4')){rejectFirst=false;return Promise.reject(new DOMException('Simulated audible autoplay restriction','NotAllowedError'));}return original.call(this);};
+    HTMLMediaElement.prototype.play=function(){if(this.src.includes('v2t-v4-4.mp4'))window.videoCoverGates.push(document.querySelector('.launch-trail')?.dataset.covered==='true');if(rejectFirst&&this.src.includes('v2t-v4-4.mp4')){rejectFirst=false;return Promise.reject(new DOMException('Simulated audible autoplay restriction','NotAllowedError'));}return original.call(this);};
   });
   const acknowledgement=new Promise(resolve=>{ackReceived=resolve;});
   let holdAck=true;
@@ -68,7 +68,7 @@ try{
   holdAck=false;releaseAck();
   await page.locator('.launch-reveal').waitFor();
   await page.locator('video').evaluate(v=>{v.loop=true;});
-  assert.equal(await page.locator('video').getAttribute('src'),'/media/precomp_13-current.mp4');
+  assert.equal(await page.locator('video').getAttribute('src'),'/media/v2t-v4-4.mp4');
   assert.equal(await page.locator('input[type=file]').count(),0);
   const ascent=await page.evaluate(async()=>{
     await new Promise(resolve=>setTimeout(resolve,3100));clearInterval(window.flightSampler);

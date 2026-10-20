@@ -4,11 +4,11 @@
   "private": true,
   "engines": {"node": ">=22.12.0"},
   "scripts": {
-    "setup": "npm --prefix aina-web ci && npm --prefix aina-web run setup && npm --prefix aina-web run build",
-    "local": "npm --prefix aina-web run local",
+    "setup": "node aina-web/tools/setup.mjs",
+    "local": "node aina-web/tools/local.mjs",
     "dev": "npm --prefix aina-web run dev",
     "build": "npm --prefix aina-web run build",
-    "start": "npm --prefix aina-web start",
+    "start": "node aina-web/tools/local.mjs",
     "test": "npm --prefix aina-web test",
     "check": "npm --prefix aina-web run check"
   }

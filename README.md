@@ -1,103 +1,83 @@
-# AINA 3D — ViTuTi launch experience
+# AINA 3D — local ViTuTi presentation
 
-AINA is an animated React / Three.js character with a glossy glass helmet, Malay voice recordings, lip movement, wave, rocket flight, jetpack sound, exhaust trails and montage landing sequence.
+AINA includes the 3D character, Malay voice recordings, lip movement, wave, flight, jetpack sound, exhaust smoke, montage and landing animation. Everything used during the presentation runs on your PC.
 
-## Quick start (Windows)
+## Windows: two clicks
 
-Install **Node.js 22.12+** and Git, then run:
+1. Download this repository and extract it to a normal folder.
+2. Double-click **SETUP.cmd** once. It finds a compatible Node.js or downloads a private, checksum-verified Node.js 24 LTS runtime with npm. It then installs the locked dependencies, downloads any missing Git LFS media and builds AINA.
+3. Double-click **START.cmd**. Your browser opens **http://localhost:5173**.
+
+No administrator rights, domain, Cloudflare, Python, AI models, API key or separate voice server are needed. Setup needs internet for downloads; after setup, the presentation works offline. Keep the terminal open; **Ctrl+C** stops AINA.
+
+Click **Start bersama AINA** to play the welcome. After the greeting, press **Space** or tap/click the screen to launch. Dragging rotates the model.
+
+## Terminal alternative
+
+With Node.js 22.12+ and npm installed, run from this folder:
 
 ```powershell
-git clone https://github.com/lqmnwido/aina-3d.git
-cd aina-3d
 npm.cmd run setup
 npm.cmd run local
 ```
 
-Open **http://localhost:5173**. Click Start to hear the welcome. After the greeting, press **Space** or tap/click the screen to launch ViTuTi. Dragging the model only rotates it.
+The same commands work inside `aina-web`. On macOS/Linux use `npm` and install Node.js yourself. The Windows scripts install a private runtime inside `.runtime`; they do not change the global PATH. If Node is only installed privately, use START.cmd rather than expecting npm to be globally available.
 
-Keep the terminal open; **Ctrl+C** stops services started by the launcher. Setup is needed once per clone or after dependency changes. On macOS/Linux use `npm` instead of `npm.cmd`.
+Setup runs `npm ci` against the app lockfile. Startup reuses installed dependencies and the existing build when unchanged; it builds again after source or asset changes. It automatically runs setup if dependencies are missing or their manifest changed. Progress is shown on screen, with detailed output only on error. Logs are in `aina-web/.local/`.
 
-The current version is an **event presentation**, not an open-ended chatbot: ASR and LLM are disabled deliberately. Playback uses bundled WAVs immediately, so no Python, GPU, vLLM, Ollama, paid API or TTS warmup is needed.
+## Assets included in Git
 
-## Included in Git
-
-| Location | Contents |
+| Folder | Contents |
 | --- | --- |
-| `aina-web/public/models/aina.glb` | Browser-ready 3D model |
-| `aina-web/public/models/AINA_voice.blend` | Editable Blender model used for the web export |
-| `reconstruction/AINA_reference.blend` | Original reconstructed Blender scene |
-| `aina-web/public/audio/` | Current approved voices and previous prepared variants |
-| `aina-web/public/media/precomp_13-current.mp4` | Current montage |
-| `aina-web/src/` | Character, lip sync, flight, smoke, sound and launch interaction |
-| `aina-web/server/`, `aina-web/local-speech/` | Server and optional legacy speech functions |
-| `reconstruction/`, `aina-web/tools/` | Blender reconstruction/export and audio tooling |
+| `aina-web/public/models/` | Browser GLB, editable Blender scene and fallback image |
+| `reconstruction/` | Original Blender reconstruction and scripts |
+| `aina-web/public/audio/` | Prerecorded voices, including selected v10 greeting and previous takes |
+| `aina-web/public/media/` | Current V2T_v4_4 montage and earlier video versions |
+| `aina-web/src/` | Face and mouth animation, wave, launch, smoke, fire, sound and landing |
 
-Regular Git is sufficient: included assets are below GitHub's per-file limit, so Git LFS is not required. Old unused test videos, local model checkpoints, virtual environments and generated scratch files are excluded. Existing files on your PC are not deleted.
+**Videos use Git LFS**, including the current 204 MB montage. With Git and Git LFS:
 
-Third-party AI weights are **not bundled** and are not needed to run AINA. Optional speech-generation setup downloads them separately. Third-party source voice samples and local credentials are not published. Check your rights to model references, generated voice and montage before redistributing or using them publicly; this repository does not grant rights to third-party content.
+```powershell
+git lfs install
+git clone https://github.com/lqmnwido/aina-3d.git
+cd aina-3d
+git lfs pull
+```
 
-## Commands
+If a GitHub ZIP or clone without LFS contains pointer files, SETUP.cmd downloads the referenced videos from this public repository and verifies their SHA256 and size. No separate Git LFS install is required for that setup path. To publish changed videos, use Git LFS when adding and pushing them.
 
-Run from the repository root (or `aina-web`):
+AI checkpoints, Python environments, credentials, temporary files and Node dependencies are not committed and are not required to play AINA. Historical voice-generation and tunnel tools remain in the source for reference; the default launcher never executes them or reads their settings.
+
+## Current sequence
+
+1. The v10 welcome says “Selamat Datang YB Menteri!”
+2. After a 400 ms delay, AINA says “Sila beri arahan untuk lancarkan V2T.”
+3. Space/touch triggers the launch voice, then flight, fire and smoke.
+4. The smoke reveals `v2t-v4-4.mp4` with sound at full volume and no video controls.
+5. The video ends, smoke transitions back to AINA's landing and success message.
+
+## Useful commands
 
 | Command | Purpose |
 | --- | --- |
-| `npm run setup` | Install locked dependencies, create missing app .env, check assets and build |
-| `npm run local` | Quiet progress launcher; rebuild only when source/assets changed; optional tunnel |
-| `npm run dev` | Developer server with Vite hot reload |
-| `npm run build` | Validate assets and generate `aina-web/dist` |
-| `npm start` | Serve an existing production build, without starting a tunnel |
-| `npm test` | Automated tests |
-| `npm run check` | Confirm required model, montage and voice assets exist |
+| `npm run setup` | Install dependencies, restore media and build |
+| `npm run local` / `npm start` | Serve locally; no AI or tunnel |
+| `npm run dev` | Vite development server |
+| `npm run build` | Validate assets and create `aina-web/dist` |
+| `npm run check` | Check required model, voice and montage assets |
+| `npm test` | Run automated checks |
 
-The launcher starts no AI workers and uses a production build to avoid development compilation during the presentation. The first install/build still needs time and internet to download npm dependencies; subsequent unchanged runs reuse the build.
+The local server binds to 127.0.0.1. It ignores old .env and Cloudflare files. To use another port, set PORT in the shell before launching; e.g. `$env:PORT=5174` in PowerShell.
 
-## Deploy
+## Editing and troubleshooting
 
-### Local server + Cloudflare Tunnel
+- Montage: copy a video into `aina-web/public/media/`, update its URL in `src/main.jsx` and the asset checker, then rebuild.
+- Voice: select WAV paths in `src/scripted-audio.js`. Text changes alone do not change prerecorded speech.
+- Missing video or LFS pointer: connect to the internet and run setup again.
+- No sound: click Start and check the browser/site volume.
+- Model display: enable browser hardware acceleration/WebGL.
+- Port in use: close the other AINA terminal before starting another copy.
+- Build or dependency error: run SETUP.cmd again; errors include the log path.
+- After changing files: reload the browser with Ctrl+F5.
 
-This preserves the existing workflow: **`npm.cmd run local` must stay running** for your public URL to work.
-
-Follow [the tunnel setup guide](aina-web/cloudflare/README.md). Credentials and the real tunnel configuration stay private. The checked-in example can be used on another machine with its own tunnel. For the current PC, the existing private configuration continues serving **https://gimmick.kohich.site**.
-
-### Docker
-
-From the repository root, with Docker running:
-
-```sh
-docker compose up --build -d
-docker compose logs -f
-# Stop:
-docker compose down
-```
-
-Open http://localhost:5173. Docker binds to localhost by default; put a reverse proxy or Cloudflare Tunnel in front for public access. Docker runs the web app only; the host tunnel is configured separately. Do not run Docker and the Node launcher on the same port simultaneously.
-
-### Static hosting (no continuously running PC)
-
-The current keyboard/touch flow works as a static site: build and deploy **all of `aina-web/dist`**, including models, audio and media. For Cloudflare Pages:
-
-- Build command: `npm run setup`
-- Output directory: `aina-web/dist`
-- Node version: 22
-- Repository root: leave at the top level
-
-This is a different deployment from the local Cloudflare Tunnel: static hosting does **not** require `npm run local`. Serve at the domain root. The user must click Start because browsers restrict automatic audio.
-
-## Edit the model, voice or montage
-
-See [app details](aina-web/README.md), [optional voice generation](aina-web/local-speech/README.md), and [Blender notes](reconstruction/README.md).
-
-Change the montage by replacing `aina-web/public/media/precomp_13-current.mp4`, then build again. Current voice mappings are in `aina-web/src/scripted-audio.js`. The welcome is two clips separated by a **400 ms application delay**, with a 1.06 playback rate; launch and landing retain their own timing.
-
-## Troubleshooting
-
-- Missing assets: clone/download the complete repository and run `npm run check`.
-- Dependency error: check Node version, then rerun `npm run setup`.
-- Blank/3D failure: use a current browser with hardware acceleration/WebGL enabled.
-- No sound: click Start, check browser/site volume; prerecorded voices need no speech server.
-- Port in use: close the other AINA process or set `PORT` in `aina-web/.env`.
-- Cloudflare 1033: the tunnel is disconnected or its DNS points at the wrong tunnel. Check tunnel credentials/config; normal local use does not require Cloudflare.
-- Launcher details appear only on error; logs live in `aina-web/local-speech/logs/`. Never commit those logs or your .env.
-
-GitHub Actions runs clean installation, asset verification, tests and production build on pushes.
+See [app details](aina-web/README.md) and [Blender notes](reconstruction/README.md).

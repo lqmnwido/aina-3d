@@ -6,11 +6,33 @@ import {LANDING_MESSAGE} from '../src/launch.js';
 import {SCRIPTED_HELP} from '../src/scripted-replies.js';
 test('greeting, launch, landing and apology have nonempty static WAVs, no live TTS needed',()=>{
   assert.equal(SCRIPTED_AUDIO.size,6);
-  assert.ok(SCRIPTED_AUDIO.has('Selamat Datang YBM! Sila beri arahan untuk lancarkan V2T.'));
+  assert.ok(SCRIPTED_AUDIO.has('Selamat Datang YB Menteri! Sila beri arahan untuk lancarkan V2T.'));
   assert.ok(SCRIPTED_AUDIO.has(LANDING_MESSAGE));assert.ok(SCRIPTED_AUDIO.has(SCRIPTED_HELP));
   assert.equal(SCRIPTED_AUDIO.get(LANDING_MESSAGE),'/audio/vituti-landing-selected-hype-34db74885b08.wav','landing uses the user-selected first sentence with the expressive full thank-you phrase, not synthetic pitch processing');
   for(const url of SCRIPTED_AUDIO.values()){
     const bytes=readFileSync(new URL('../public'+url,import.meta.url));
     assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.ok(bytes.length>10000);
+  }
+});
+
+test('polished welcome preview preserves both clips and an exact 400ms gap',()=>{
+  const data=url=>{
+    const wav=readFileSync(new URL('../public'+url,import.meta.url));
+    for(let offset=12;offset+8<=wav.length;){
+      const size=wav.readUInt32LE(offset+4);
+      if(wav.toString('ascii',offset,offset+4)==='data')return wav.subarray(offset+8,offset+8+size);
+      offset+=8+size+(size%2);
+    }
+    throw Error('Missing PCM');
+  };
+  const welcome=data(SCRIPTED_AUDIO.get('Selamat Datang YB Menteri!'));
+  const instruction=data(SCRIPTED_AUDIO.get('Sila beri arahan untuk lancarkan V2T.'));
+  const preview=data(SCRIPTED_AUDIO.get('Selamat Datang YB Menteri! Sila beri arahan untuk lancarkan V2T.'));
+  assert.deepEqual(preview,Buffer.concat([welcome,Buffer.alloc(9600*2),instruction]));
+  for(const pcm of [welcome,instruction]){
+    let peak=0;
+    for(let i=0;i<pcm.length;i+=2)peak=Math.max(peak,Math.abs(pcm.readInt16LE(i)));
+    assert.ok(peak>1000&&peak<32767,'audible, without sample clipping');
+    assert.equal(pcm.readInt16LE(0),0);assert.equal(pcm.readInt16LE(pcm.length-2),0);
   }
 });

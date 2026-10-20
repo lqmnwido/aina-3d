@@ -1,40 +1,32 @@
-# AINA web app
+# AINA local app
 
-See [repository quick start](../README.md) for installation, local serving and deployment.
+Use **SETUP.cmd** and **START.cmd** in the repository's parent folder. Setup installs Node.js/npm if needed, installs dependencies, restores video files and builds the presentation. START opens localhost. Internet is only required for initial installation and later dependency/media downloads.
 
-## Presentation flow
+If Node.js 22.12+ is already installed, from this folder:
 
-1. Start enables browser audio and waves AINA's hand.
-2. AINA says “Selamat Datang YBM!” then waits 400 ms and says “Sila beri arahan untuk lancarkan V2T.”
-3. Space or a screen tap plays “Okay, saya akan lancarkan ViTuTi sekarang!”
-4. After the voice finishes, AINA flies upward with procedural jetpack audio, fire and smoke trails.
-5. The screen-wide smoke reveals the unmuted montage without video controls.
-6. At the end, the smoke transition and rocket landing return AINA; she plays the success message.
-
-No microphone is requested. ASR/LLM inference is not part of this version. Legacy speech code remains available separately but does not run by default.
-
-## Files to edit
-
-- `src/main.jsx`: greeting, input handling and playback lifecycle.
-- `src/Avatar.jsx`: model appearance, face, mouth, wave and rocket motion.
-- `src/launch.js`: launch/landing text and sequence timing.
-- `src/scripted-audio.js`: exact text-to-WAV mapping.
-- `src/speech.js`: audio playback, analysis for lip movement, rates and legacy microphone helper.
-- `src/LaunchSmoke.jsx`, `src/ExhaustSmoke.jsx`, `src/smoke-particles.js`: smoke simulation.
-- `src/jetpack-sound.js`: procedural sound effect.
-- `public/models/`, `public/audio/`, `public/media/`: shipped assets.
-
-Keep all mapped WAV paths valid. Build checks catch missing required assets. Rebuild after changing model, audio or video. The app uses prerecorded speech, not live voice generation, so editing text alone does not change the spoken recording.
-
-## Standalone commands
-
-```sh
-npm ci
-npm run setup
-npm run build
-npm run local
+```powershell
+npm.cmd run setup
+npm.cmd run local
 ```
 
-Use `npm run dev` for development; `npm start` serves the built distribution. Configuration is in .env (created from .env.example without overwriting existing values). Private Cloudflare config is optional.
+The local launcher uses a small static server. It never starts ASR, TTS, LLM, WSL or Cloudflare and ignores old .env/tunnel configuration. The prerecorded v10 greeting has a 400 ms delay between its two lines. Space or touch plays the launch line, flight/fire/smoke, the V2T_v4_4 montage and landing sequence. The video has sound and no controls.
 
-Tests: `npm test`. Browser integration audit: with Chrome installed and the app running at localhost:5173, run `node tools/check_space_launch.js`. Historical tools may require optional AI services or private recording references; they are not installation prerequisites.
+## Edit
+
+- `src/main.jsx`: input, greeting lifecycle and montage URL.
+- `src/Avatar.jsx`: character, face, mouth and wave animation.
+- `src/launch.js`: launch/landing text and timing.
+- `src/scripted-audio.js`: exact phrase to prerecorded WAV mapping.
+- `src/LaunchSmoke.jsx`, `src/ExhaustSmoke.jsx`, `src/smoke-particles.js`: smoke.
+- `src/jetpack-sound.js`: procedural sound effect.
+- `public/models/`, `public/audio/`, `public/media/`: bundled assets.
+- `tools/local.mjs`, `server/local.js`: local-only startup and HTTP server.
+- `tools/setup.mjs`: locked npm installation, media retrieval and build.
+
+Videos are tracked using Git LFS. Setup detects pointers in downloaded ZIPs and retrieves the real video, verifying its checksum. Missing assets are rejected before startup.
+
+Use `npm run dev` for hot reload, `npm run build` to build and `npm test` to test. Setup/start logs are in `.local/`. After setup, unchanged starts do not reinstall or rebuild.
+
+Historical AI-generation and cloud scripts are retained for reference and are outside the default local workflow. They may require additional private references, models and services.
+
+See [full instructions](../README.md).

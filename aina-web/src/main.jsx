@@ -7,7 +7,7 @@ import './styles.css';
 import {LAUNCH_ACK,LANDING_MESSAGE} from './launch';
 import LaunchReveal from './LaunchReveal';
 import {JetpackSound} from './jetpack-sound';
-const MONTAGE_VIDEO='/media/precomp_13-current.mp4';
+const MONTAGE_VIDEO='/media/v2t-v4-4.mp4';
 const stars=Array.from({length:135},(_,i)=>({x:(i*73.37+19)%100,y:(i*47.91+7)%100,r:(i%13===0?1.1:.35+(i%4)*.14)*.12,opacity:.18+(i%6)*.08}));
 function SpaceBackdrop(){
   return <div className="space-backdrop" aria-hidden="true"><div className="space-nebula"/><svg className="space-stars" viewBox="0 0 100 100" preserveAspectRatio="none">{stars.map((s,i)=><circle key={i} cx={s.x} cy={s.y} r={s.r} fill="white" opacity={s.opacity}/>)}</svg><div className="space-planet"><div className="planet-ring"/></div><div className="space-horizon"/></div>;
@@ -43,12 +43,13 @@ function App(){
     try{
       await speaker.current.unlock();
       const [welcome,instruction]=GREETING.split(/(?<=!)\s+/u);
-      await speaker.current.speak(welcome,'local',undefined,'greetingHype');
+      // Preserve the prepared clips' cadence and pitch at native playback rate.
+      await speaker.current.speak(welcome,'local',undefined,'natural');
       if(ticket!==generation.current)return;
       // End the first audio and mouth animation, then wait in real time.
       await new Promise(resolve=>setTimeout(resolve,400));
       if(ticket!==generation.current)return;
-      await speaker.current.speak(instruction,'local',undefined,'greetingHype');
+      await speaker.current.speak(instruction,'local',undefined,'natural');
       setStarted(true);
     }catch(e){if(e.name!=='AbortError')setError(e.message);}
     finally{greetingRef.current=false;setGreeting(false);setJoyful(false);}

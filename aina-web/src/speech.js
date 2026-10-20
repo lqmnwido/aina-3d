@@ -1,7 +1,7 @@
 import { speechCues, cueAt, shapeForSound } from './voice-motion.js';
 import { speechSegments } from './speech-segments.js';
 import {SCRIPTED_AUDIO} from './scripted-audio.js';
-export const GREETING = 'Selamat Datang YBM! Sila beri arahan untuk lancarkan V2T.';
+export const GREETING = 'Selamat Datang YB Menteri! Sila beri arahan untuk lancarkan V2T.';
 const resting = { speaking:false,voiceActive:false,expression:'neutral',open:0,round:0,wide:0,closed:0,fv:0,energy:0 };
 export const motion = { ...resting };
 

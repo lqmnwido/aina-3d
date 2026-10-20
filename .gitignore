@@ -14,8 +14,9 @@ aina-web/cloudflare/config.yml
 aina-web/cloudflare/credentials.json
 aina-web/cloudflare/*.pem
 aina-web/local-speech/voice-reference.wav
-aina-web/public/media/precomp_13.mp4
-aina-web/public/media/hot-fuzz-montage-test.mp4
+.runtime/
+aina-web/.local/
+*.download
 reconstruction/*.zip
 reconstruction/qa*/
 reconstruction/qa*.png

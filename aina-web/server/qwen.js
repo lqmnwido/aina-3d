@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import { randomUUID } from 'node:crypto';
 
-export const GREETING = 'Selamat Datang YBM! Sila beri arahan untuk lancarkan V2T.';
+export const GREETING = 'Selamat Datang YB Menteri! Sila beri arahan untuk lancarkan V2T.';
 export const event = (type, fields = {}) => ({ event_id: randomUUID(), type, ...fields });
 export function asrSession() {
   return event('session.update', { session: {
