@@ -4,7 +4,7 @@ import {existsSync} from 'node:fs';
 import {assertNode,root,runQuiet,logFile,markDependencies} from './local-common.mjs';
 import {restoreBundledAssets} from './bundled-assets.mjs';
 import {checkAssets} from './check-assets.mjs';
-import {createProgress} from '../local-speech/startup-ui.js';
+import {createProgress} from './startup-ui.js';
 export async function setup(){
   assertNode();const progress=createProgress(),log=logFile('setup');
   progress.update(0,4,'Preparing bundled assets');

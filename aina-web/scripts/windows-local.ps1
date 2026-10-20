@@ -43,7 +43,7 @@ try {
     }
     $env:PATH = (Split-Path $nodePath) + ';' + $env:PATH
     Set-Location -LiteralPath $projectRoot
-    $entry = if ($Mode -eq 'Setup') { 'aina-web\tools\setup.mjs' } else { 'aina-web\tools\local.mjs' }
+    $entry = if ($Mode -eq 'Setup') { 'tools\setup.mjs' } else { 'tools\local.mjs' }
     if ($Mode -eq 'Start') { & $nodePath (Join-Path $projectRoot $entry) --open } else { & $nodePath (Join-Path $projectRoot $entry) }
     exit $LASTEXITCODE
 } catch {

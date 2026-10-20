@@ -1,7 +1,0 @@
-# Copy to config.yml, replace UUID/hostname, and supply your own credentials.json.
-tunnel: YOUR-TUNNEL-UUID
-credentials-file: cloudflare/credentials.json
-ingress:
-  - hostname: aina.example.com
-    service: http://127.0.0.1:5173
-  - service: http_status:404

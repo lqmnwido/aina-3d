@@ -4,8 +4,8 @@ import {fileURLToPath} from 'node:url';
 import {assertNode,root,dependenciesReady,runQuiet,logFile} from './local-common.mjs';
 import {setup} from './setup.mjs';
 import {checkAssets} from './check-assets.mjs';
-import {needsFrontendBuild} from '../local-speech/build-freshness.js';
-import {createProgress} from '../local-speech/startup-ui.js';
+import {needsFrontendBuild} from './build-freshness.js';
+import {createProgress} from './startup-ui.js';
 export async function local(){
   assertNode();const progress=createProgress();
   if(!dependenciesReady())await setup();

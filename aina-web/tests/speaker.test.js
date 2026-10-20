@@ -1,43 +1,33 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Speaker,motion} from '../src/speech.js';
-import {speechSegments} from '../src/speech-segments.js';
+import {LAUNCH_ACK} from '../src/launch.js';
+import {SCRIPTED_AUDIO} from '../src/scripted-audio.js';
 
-test('local speech prefetches one segment and resolves only after final playback',async()=>{
+test('prepared playback waits for audio completion, reuses cached WAVs and never calls an AI endpoint',async()=>{
   const originals=new Map(),sources=[],requests=[],states=[];
   const mock=(name,value)=>{originals.set(name,Object.getOwnPropertyDescriptor(globalThis,name));Object.defineProperty(globalThis,name,{value,writable:true,configurable:true});};
-  mock('window',{speechSynthesis:{cancel(){}}});
   mock('requestAnimationFrame',()=>1);mock('cancelAnimationFrame',()=>{});
-  mock('fetch',async(_url,options)=>{
-    requests.push({text:JSON.parse(options.body).text,signal:options.signal});
-    return {ok:true,headers:{get:()=> 'audio/wav'},arrayBuffer:async()=>new ArrayBuffer(8)};
-  });
+  mock('fetch',async url=>{requests.push(url);return {ok:true,headers:{get:()=> 'audio/wav'},arrayBuffer:async()=>new ArrayBuffer(8)};});
   mock('AudioContext',class{
     currentTime=0;resume=async()=>{};decodeAudioData=async()=>({duration:2});
     createBufferSource(){const source={playbackRate:{},connect(){},disconnect(){},start(){},stop(){this.onended?.();}};sources.push(source);return source;}
     createAnalyser(){return {fftSize:512,connect(){},disconnect(){},getFloatTimeDomainData(array){array.fill(0);}};}
   });
   const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
-  const text='Saya boleh membantu anda. '+'Ini penerangan mesra untuk anda. '.repeat(6).trim();
-  const segments=speechSegments(text);
-  const speaker=new Speaker(value=>states.push(value));let finished=false;
+  const speaker=new Speaker(value=>states.push(value));
   try{
-    const completion=speaker.speak(text,'local',undefined,'annoyed').then(()=>{finished=true;});
-    await flush();
-    assert.equal(sources.length,1);
-    assert.equal(motion.expression,'annoyed','facial expression starts with voice playback');
-    assert.equal(requests.length,2,'only one segment is prefetched');
-    assert.equal(finished,false);
-    for(let i=0;i<segments.length;i++){
-      assert.equal(sources.length,i+1);
-      assert.equal(finished,false,'flight cannot start before playback completes');
-      sources[i].onended();await flush();
-    }
-    await completion;
-    assert.deepEqual(requests.map(request=>request.text),segments);
-    assert.equal(new Set(requests.map(request=>request.signal)).size,1);
-    assert.equal(states.at(-1),false);assert.equal(motion.speaking,false);
-    assert.equal(motion.expression,'neutral','facial expression resets after the final playback');
+    let finished=false;
+    const completion=speaker.speak(LAUNCH_ACK,'local',undefined,'cheerful').then(()=>{finished=true;});
+    await flush();assert.equal(finished,false);assert.equal(sources.length,1);assert.equal(motion.speaking,true);
+    assert.equal(sources[0].playbackRate.value,1.06);
+    sources[0].onended();await completion;
+    assert.equal(finished,true);assert.equal(motion.speaking,false);assert.equal(states.at(-1),false);
+    const second=speaker.speak(LAUNCH_ACK,'local',undefined,'natural');await flush();
+    assert.equal(sources[1].playbackRate.value,1);sources[1].onended();await second;
+    assert.deepEqual(requests,[SCRIPTED_AUDIO.get(LAUNCH_ACK)],'second playback reuses the decoded local WAV');
+    await assert.rejects(speaker.speak('Unrecorded phrase','local'),/Rakaman/);
+    assert.equal(requests.length,1,'unknown speech cannot fall back to live TTS');
   }finally{
     speaker.stop();
     for(const[name,descriptor]of originals)if(descriptor)Object.defineProperty(globalThis,name,descriptor);else delete globalThis[name];

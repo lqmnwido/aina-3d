@@ -45,7 +45,7 @@ test('asset check detects LFS pointers without confusing downloaded media',async
 
 test('setup replaces LFS pointers only after verifying downloaded content',async()=>{
   const folder=await mkdtemp(path.join(os.tmpdir(),'aina-lfs-download-'));
-  const root=path.join(folder,'aina-web'),media=path.join(root,'public','media');
+  const root=path.join(folder,'renamed presentation folder'),media=path.join(root,'public','media');
   const video=Buffer.from('video content for checksum verification');
   const oid=createHash('sha256').update(video).digest('hex');
   const pointer=`version https://git-lfs.github.com/spec/v1\noid sha256:${oid}\nsize ${video.length}\n`;

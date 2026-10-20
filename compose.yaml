@@ -1,6 +1,0 @@
-services:
-  aina:
-    build: ./aina-web
-    ports:
-      - "127.0.0.1:5173:5173"
-    restart: unless-stopped

@@ -27,7 +27,7 @@ export async function assetPointers(directory){
 }
 export async function restoreBundledAssets(root,{fetchFile=fetch}={}){
   for(const asset of await assetPointers(path.join(root,'public'))){
-    const relative=path.relative(path.dirname(root),asset.file).split(path.sep).map(encodeURIComponent).join('/');
+    const relative='aina-web/'+path.relative(root,asset.file).split(path.sep).map(encodeURIComponent).join('/');
     const url=`https://media.githubusercontent.com/media/lqmnwido/aina-3d/main/${relative}`;
     const temporary=asset.file+'.download';
     try{

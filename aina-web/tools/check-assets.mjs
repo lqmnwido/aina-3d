@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {SCRIPTED_AUDIO} from '../src/scripted-audio.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 export function checkAssets(){
-  const assets=new Set([...SCRIPTED_AUDIO.values(),'/models/aina.glb','/models/aina-fallback.png','/models/AINA_voice.blend','/media/v2t-v4-4.mp4']);
+  const assets=new Set([...SCRIPTED_AUDIO.values(),'/models/aina.glb','/models/aina-fallback.png','/media/v2t-v4-4.mp4']);
   const missing=[...assets].filter(asset=>{
     const file=path.join(root,'public',asset);
     if(!existsSync(file)||statSync(file).size===0)return true;
